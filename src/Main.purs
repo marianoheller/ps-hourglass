@@ -1,9 +1,13 @@
 module Main where
 
 import Prelude
-import Effect (Effect)
-import Effect.Console (log)
+import Control.Monad.Eff (Eff)
+import Data.Maybe (Maybe(..))
+import Graphics.Canvas (CANVAS, rect, fillPath, setFillStyle, getContext2D,
+                        getCanvasElementById)
+import Partial.Unsafe (unsafePartial)
 
-main :: Effect Unit
-main = do
-  log "Hello sailor!"
+main :: Eff (canvas :: CANVAS) Unit
+main = void $ unsafePartial do
+  Just canvas <- getCanvasElementById "canvas"
+  ctx <- getContext2D canvas
