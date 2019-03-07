@@ -3,14 +3,15 @@ module Main where
 import Prelude
 import Config as Conf
 import Types
+import Data.List
+import Data.Int
 import Effect (Effect)
 import Data.Maybe (Maybe(..))
 import Graphics.Canvas as C
-import Partial.Unsafe (unsafePartial)
 
 
-main :: forall e. Effect Unit
-main = void $ unsafePartial do
+main :: Effect Unit
+main = do
   mcanvas <- C.getCanvasElementById "targetCanvas"
   case mcanvas of
     Just canvas -> do
@@ -19,20 +20,21 @@ main = void $ unsafePartial do
       C.setFillStyle ctx "red"
       C.setStrokeStyle ctx "black"
       poses <- createPos Conf.particlesQty
-      fmap (drawParticles ctx Conf.particleRadius) poses
+      (drawParticles ctx Conf.particleRadius) <$> poses
       pure unit
     Nothing -> pure unit
 
-configCanvas :: C.CanvasElement -> Unit
+
+configCanvas :: C.CanvasElement -> Effect Unit
 configCanvas canvas = do
   C.setCanvasHeight canvas Conf.canvasHeight
   C.setCanvasWidth canvas Conf.canvasWidth
-  unit
+  pure unit
 
-createPos :: Number -> List TupleXY
-createPos qty = do
-  n <- 1.0 .. qty
-  pure 
+
+createPos :: Int -> List TupleXY
+createPos qty = (\n -> { x: n, y: n }) <$> toNumber <$> (range 1 qty)
+
 
 drawParticles :: C.Context2D -> Number -> TupleXY -> Effect Unit
 drawParticles ctx r p = do
