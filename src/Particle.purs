@@ -1,14 +1,10 @@
 module Particle where
 import Prelude
+import Types
 import Math (sqrt, pow, sin, cos, atan)
 import Data.List 
 
 type Tick = Number
-
-type TupleXY = {
-  x :: Number,
-  y :: Number
-}
 
 type Accel = TupleXY
 
