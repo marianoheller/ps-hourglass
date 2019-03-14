@@ -18,8 +18,10 @@ type Particle = {
   collisionRadius :: Number
 }
 
-draw :: C.Context2D -> Particle -> Effect Unit
-draw ctx p = do
+drawP :: C.Context2D -> Particle -> Effect Unit
+drawP ctx p = do
+  C.setFillStyle ctx "red"
+  C.setStrokeStyle ctx "black"
   C.fillPath ctx $ C.arc ctx
     { x: p.p.x
     , y: p.p.y

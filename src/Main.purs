@@ -1,12 +1,14 @@
 module Main where
 
 import Prelude
+import Particle as P
 import Config as Conf
 import Types
 import Math
 import Data.Array
 import Data.Traversable (sequence, fold)
 import Data.Int
+import Control.Monad.State
 import Effect (Effect)
 import Data.Maybe (Maybe(..))
 import Graphics.Canvas as C
@@ -24,8 +26,6 @@ drawStuff :: C.CanvasElement -> Effect Unit
 drawStuff canvas = do
   configCanvas canvas
   ctx <- C.getContext2D canvas
-  C.setFillStyle ctx "red"
-  C.setStrokeStyle ctx "black"
   let poses = createInitialPos Conf.particlesQty Conf.canvasWidth Conf.canvasHeight
   map fold $
     sequence $
@@ -55,3 +55,27 @@ drawParticle ctx r p = do
     , end: 2.0 * pi
     }
   pure unit
+
+
+type AnimationValue = Int
+type AnimationState = {
+  ps :: Array P.Particle,
+  time :: Int
+}
+
+playAnimation :: C.Context2D -> Int -> State AnimationState AnimationValue
+playAnimation ctx t = do
+  { ps, time } <- get
+  map fold $ sequence $ P.drawP ctx <$> ps
+  pure $ t + 1
+{- playAnimation 0 = do
+  { ps, time } <- get
+  pure time
+playAnimation t = do
+  { ps, time } <- get
+  P.drawP <$> ps
+  put { ps: ps, time: t - 1 }
+  playAnimation time
+ -}
+startState :: AnimationState
+startState = { ps: [], time: 0 }
