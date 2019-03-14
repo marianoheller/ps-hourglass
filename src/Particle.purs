@@ -1,8 +1,12 @@
 module Particle where
+
 import Prelude
 import Types
-import Math (sqrt, pow, sin, cos, atan)
-import Data.List 
+import Math (sqrt, pow, sin, cos, atan, pi)
+import Data.List
+import Effect (Effect)
+import Graphics.Canvas as C
+import Config as Conf
 
 type Tick = Number
 
@@ -13,9 +17,17 @@ type Particle = {
   p :: TupleXY,
   collisionRadius :: Number
 }
-{- 
 
-draw :: f -> Context2D -}
+draw :: C.Context2D -> Particle -> Effect Unit
+draw ctx p = do
+  C.fillPath ctx $ C.arc ctx
+    { x: p.p.x
+    , y: p.p.y
+    , radius: Conf.particleRadius
+    , start: 0.0
+    , end: 2.0 * pi
+    }
+  pure unit
 
 
 nextTick :: Particle -> Accel -> Tick -> Particle

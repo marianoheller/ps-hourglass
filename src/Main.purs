@@ -4,7 +4,8 @@ import Prelude
 import Config as Conf
 import Types
 import Math
-import Data.List
+import Data.Array
+import Data.Traversable (sequence, fold)
 import Data.Int
 import Effect (Effect)
 import Data.Maybe (Maybe(..))
@@ -19,16 +20,17 @@ main = do
     Nothing -> pure unit
 
 
-drawStuff :: Effect Unit
-drawStuff canvas =  do
+drawStuff :: C.CanvasElement -> Effect Unit
+drawStuff canvas = do
   configCanvas canvas
   ctx <- C.getContext2D canvas
   C.setFillStyle ctx "red"
   C.setStrokeStyle ctx "black"
-  {- pos <- createInitialPos Conf.particlesQty -}
-  {- e <- drawParticle ctx Conf.particleRadius pos -}
-  e <- drawParticle ctx Conf.particleRadius <$> (createInitialPos Conf.particlesQty)
-  pure unit
+  let poses = createInitialPos Conf.particlesQty Conf.canvasWidth Conf.canvasHeight
+  map fold $
+    sequence $
+      drawParticle ctx Conf.particleRadius <$> poses
+
 
 configCanvas :: C.CanvasElement -> Effect Unit
 configCanvas canvas = do
@@ -36,8 +38,11 @@ configCanvas canvas = do
   C.setCanvasWidth canvas Conf.canvasWidth
 
 
-createInitialPos :: Int -> List TupleXY
-createInitialPos qty = (\n -> { x: n, y: n }) <<< toNumber <$> (range 1 qty)
+createInitialPos :: Int -> Number -> Number -> Array TupleXY
+createInitialPos qty width height =
+  (\n -> { x: n, y: height / 2.0 }) <<< (\n -> n * step) <<< toNumber <$> (range 1 qty)
+  where step = width / qty'
+        qty' = toNumber qty
 
 
 drawParticle :: C.Context2D -> Number -> TupleXY -> Effect Unit
@@ -47,5 +52,6 @@ drawParticle ctx r p = do
     , y: p.y
     , radius: r
     , start: 0.0
-    , end: pi
+    , end: 2.0 * pi
     }
+  pure unit
