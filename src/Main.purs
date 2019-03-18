@@ -27,9 +27,10 @@ drawStuff canvas = do
   configCanvas canvas
   ctx <- C.getContext2D canvas
   let poses = createInitialPos Conf.particlesQty Conf.canvasWidth Conf.canvasHeight
+      ps = P.initP <$> poses
   map fold $
     sequence $
-      drawParticle ctx Conf.particleRadius <$> poses
+      P.drawP ctx <$> ps
 
 
 configCanvas :: C.CanvasElement -> Effect Unit
@@ -57,26 +58,20 @@ drawParticle ctx r p = do
   pure unit
 
 
+
+{- 
 type AnimationValue = Int
 type AnimationState = {
   ps :: Array P.Particle,
   time :: Int
 }
 
-playAnimation :: C.Context2D -> Int -> State AnimationState AnimationValue
+playAnimation :: C.Context2D -> Int -> State AnimationState Unit
 playAnimation ctx t = do
   { ps, time } <- get
-  {- map fold $ sequence $ P.drawP ctx <$> ps -}
-  _ <- sequence $ P.drawP ctx <$> ps
-  pure $ t + 1
-{- playAnimation 0 = do
-  { ps, time } <- get
-  pure time
-playAnimation t = do
-  { ps, time } <- get
-  P.drawP <$> ps
-  put { ps: ps, time: t - 1 }
-  playAnimation time
- -}
+  map fold $ sequence $ P.drawP ctx <$> ps
+  pure e
+
 startState :: AnimationState
 startState = { ps: [], time: 0 }
+ -}

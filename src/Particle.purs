@@ -31,6 +31,15 @@ drawP ctx p = do
     }
   pure unit
 
+initP :: TupleXY -> Particle
+initP pos = {
+  p: pos,
+  v: {
+    x: 0.0,
+    y: 0.0
+  },
+  collisionRadius: Conf.particleRadius
+}
 
 nextTick :: Particle -> Accel -> Tick -> Particle
 nextTick e a t = e {

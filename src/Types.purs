@@ -1,4 +1,5 @@
-module Types where  
+module Types where 
+
 
 type TupleXY = {
   x :: Number,
