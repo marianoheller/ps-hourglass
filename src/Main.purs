@@ -66,7 +66,8 @@ type AnimationState = {
 playAnimation :: C.Context2D -> Int -> State AnimationState AnimationValue
 playAnimation ctx t = do
   { ps, time } <- get
-  map fold $ sequence $ P.drawP ctx <$> ps
+  {- map fold $ sequence $ P.drawP ctx <$> ps -}
+  _ <- sequence $ P.drawP ctx <$> ps
   pure $ t + 1
 {- playAnimation 0 = do
   { ps, time } <- get
